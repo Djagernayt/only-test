@@ -1,10 +1,8 @@
-// Typography
 $font-family-base: 'PT Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 $font-size-base: 1rem;
 $font-weight-normal: 400;
 $font-weight-bold: 700;
 
-// Colors
 $bg-color: #F4F5F9;
 $text-color-primary: #42567A;
 $text-color-secondary: #3877EE;
@@ -13,21 +11,24 @@ $accent-color: #3877EE;
 $gradient-start: #3877EE;
 $gradient-end: #EF5DA8;
 
-// Layout
 $container-max-width: 1440px;
 $container-padding: 2rem;
 $border-radius-base: 0.5rem;
 
-// Timeline specific
-$circle-size: 530px;
+$circle-size-desktop: clamp(400px, 40vw, 530px);
+$circle-size-tablet: clamp(350px, 50vw, 400px);
+$circle-size-mobile: 300px;
+
 $point-size: 56px;
 $point-active-size: 6px;
 
-// Animations
+$gap-large: clamp(3rem, 8vw, 6rem);
+$gap-medium: clamp(2rem, 4vw, 4rem);
+$gap-small: clamp(1rem, 2vw, 2rem);
+
 $transition-base: 0.3s ease;
 $transition-slow: 0.8s ease;
 
-// Z-index
 $z-index-circle: 1;
 $z-index-points: 2;
 $z-index-navigation: 3;

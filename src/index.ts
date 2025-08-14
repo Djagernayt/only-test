@@ -64,7 +64,7 @@ class App {
       return newTimeline;
     };
 
-    console.log('💡 Для создания нового экземпляра выполните: window.createNewTimelineInstance()');
+    // console.log('💡 Для создания нового экземпляра выполните: window.createNewTimelineInstance()');
   }
 
   private setupErrorHandling(): void {
@@ -128,12 +128,12 @@ const app = new App();
 export default app;
 (window as any).timelineApp = app;
 
-console.log(`
-🕰️ Timeline Project
-├── Версия: 1.0.0
-├── Технологии: TypeScript, SCSS, Webpack, Swiper, GSAP
-├── Компонент: window.timelineApp.getTimeline()
-└── API: goToNext(), goToPrev(), goToPeriod(index)
+// console.log(`
+// 🕰️ Timeline Project
+// ├── Версия: 1.0.0
+// ├── Технологии: TypeScript, SCSS, Webpack, Swiper, GSAP
+// ├── Компонент: window.timelineApp.getTimeline()
+// └── API: goToNext(), goToPrev(), goToPeriod(index)
 
-Для создания нового экземпляра: window.createNewTimelineInstance()
-`);
+// Для создания нового экземпляра: window.createNewTimelineInstance()
+// `);

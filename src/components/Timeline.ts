@@ -10,6 +10,7 @@ export default class Timeline {
   private circlePoints: CirclePoint[] = [];
   private swiper: Swiper | null = null;
   private isAnimating: boolean = false;
+  private currentRotation: number = 0;
 
   constructor(container: HTMLElement, config: Partial<TimelineConfig>) {
     this.container = container;
@@ -60,6 +61,9 @@ export default class Timeline {
           </div>
           
           <div class="timeline__main-content">
+            <div class="timeline__category-label">
+              <span class="timeline__category-text"></span>
+            </div>
             <div class="timeline__years">
               <span class="timeline__year timeline__year--start"></span>
               <span class="timeline__year timeline__year--end"></span>
@@ -73,43 +77,47 @@ export default class Timeline {
           </div>
           
           <div class="timeline__bottom">
-            <div class="timeline__navigation">
-              <span class="timeline__counter">
-                <span class="timeline__counter-current">01</span>/<span class="timeline__counter-total">06</span>
-              </span>
-              <div class="timeline__nav-buttons">
-                <button class="timeline__nav-button timeline__nav-button--prev" type="button" aria-label="Предыдущий период">
-                  <svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8.49988 0.750001L2.24988 7L8.49988 13.25" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </button>
-                <button class="timeline__nav-button timeline__nav-button--next" type="button" aria-label="Следующий период">
-                  <svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.50012 0.750001L7.75012 7L1.50012 13.25" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <div class="timeline__events">
-              <div class="timeline__events-wrapper">
-                <div class="swiper timeline-swiper">
-                  <div class="swiper-wrapper">
-                    ${this.createEventsHTML()}
-                  </div>
-                </div>
-                
-                <div class="timeline__swiper-nav">
-                  <button class="timeline-swiper-button-prev" type="button" aria-label="Предыдущее событие">
+            <div class="timeline__navigation-section">
+              <div class="timeline__navigation">
+                <span class="timeline__counter">
+                  <span class="timeline__counter-current">01</span>/<span class="timeline__counter-total">06</span>
+                </span>
+                <div class="timeline__nav-buttons">
+                  <button class="timeline__nav-button timeline__nav-button--prev" type="button" aria-label="Предыдущий период">
                     <svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg">
                       <path d="M8.49988 0.750001L2.24988 7L8.49988 13.25" stroke="currentColor" stroke-width="2"/>
                     </svg>
                   </button>
-                  <button class="timeline-swiper-button-next" type="button" aria-label="Следующее событие">
+                  <button class="timeline__nav-button timeline__nav-button--next" type="button" aria-label="Следующий период">
                     <svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1.50012 0.750001L7.75012 7L1.50012 13.25" stroke="currentColor" stroke-width="2"/>
                     </svg>
                   </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="timeline__events-section">
+              <div class="timeline__events">
+                <div class="timeline__events-wrapper">
+                  <div class="swiper timeline-swiper">
+                    <div class="swiper-wrapper">
+                      ${this.createEventsHTML()}
+                    </div>
+                  </div>
+                  
+                  <div class="timeline__swiper-nav">
+                    <button class="timeline-swiper-button-prev" type="button" aria-label="Предыдущее событие">
+                      <svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.49988 0.750001L2.24988 7L8.49988 13.25" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                    </button>
+                    <button class="timeline-swiper-button-next" type="button" aria-label="Следующее событие">
+                      <svg viewBox="0 0 10 14" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.50012 0.750001L7.75012 7L1.50012 13.25" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -130,7 +138,6 @@ export default class Timeline {
         aria-label="Период ${period.title}"
       >
         <span class="timeline__point-number">${index + 1}</span>
-        <span class="timeline__point-label">${period.title}</span>
       </button>
     `).join('');
   }
@@ -156,7 +163,6 @@ export default class Timeline {
     const totalPoints = this.config.periods?.length || 0;
     
     this.circlePoints = (this.config.periods || []).map((period, index) => {
-      // Начинаем с верхней позиции (-90 градусов) и распределяем равномерно
       const angle = (index * (360 / totalPoints) - 90) * (Math.PI / 180);
       const x = center.x + radius * Math.cos(angle);
       const y = center.y + radius * Math.sin(angle);
@@ -181,7 +187,7 @@ export default class Timeline {
         nextEl: '.timeline-swiper-button-next',
         prevEl: '.timeline-swiper-button-prev',
       },
-      spaceBetween: 80,
+      spaceBetween: 25,
       slidesPerView: 'auto',
       freeMode: true,
       mousewheel: {
@@ -192,25 +198,21 @@ export default class Timeline {
   }
 
   private setupEventListeners(): void {
-    // Navigation buttons
     const prevBtn = this.container.querySelector('.timeline__nav-button--prev');
     const nextBtn = this.container.querySelector('.timeline__nav-button--next');
     
     prevBtn?.addEventListener('click', () => this.goToPrev());
     nextBtn?.addEventListener('click', () => this.goToNext());
 
-    // Circle points
     const points = this.container.querySelectorAll('.timeline__point');
     points.forEach((point, index) => {
       point.addEventListener('click', () => this.goToPeriod(index));
     });
 
-    // Keyboard navigation
     if (this.config.enableKeyboardNavigation) {
       document.addEventListener('keydown', this.handleKeydown.bind(this));
     }
 
-    // Handle window resize
     window.addEventListener('resize', this.handleResize.bind(this));
   }
 
@@ -230,14 +232,12 @@ export default class Timeline {
   }
 
   private handleResize(): void {
-    // Recalculate positions on resize with delay to ensure DOM is updated
     setTimeout(() => {
       this.updateCirclePointsPositions();
     }, 100);
   }
 
   private setInitialState(): void {
-    // Delay positioning to ensure DOM is ready
     setTimeout(() => {
       this.updateCirclePointsPositions();
     }, 100);
@@ -245,6 +245,7 @@ export default class Timeline {
     this.updateYearDisplay();
     this.updateCounter();
     this.updateActivePoint();
+    this.updateCategoryLabel();
     this.showEventsForPeriod(this.currentPeriodIndex);
   }
 
@@ -254,18 +255,22 @@ export default class Timeline {
     
     if (!circle) return;
     
-    // Получаем реальный размер круга
     const circleRect = circle.getBoundingClientRect();
     const actualRadius = circleRect.width / 2;
     const pointRadius = actualRadius - 28;
+    const totalPoints = this.config.periods?.length || 0;
     
     points.forEach((point, index) => {
-      const totalPoints = this.config.periods?.length || 0;
       const angle = (index * (360 / totalPoints) - 90) * (Math.PI / 180);
       const x = actualRadius + pointRadius * Math.cos(angle);
       const y = actualRadius + pointRadius * Math.sin(angle);
       
       (point as HTMLElement).style.transform = `translate(${x - actualRadius}px, ${y - actualRadius}px)`;
+      
+      const pointNumber = point.querySelector('.timeline__point-number') as HTMLElement;
+      if (pointNumber) {
+        pointNumber.style.transform = `rotate(${-this.currentRotation}deg)`;
+      }
     });
   }
 
@@ -275,7 +280,6 @@ export default class Timeline {
     const endYearEl = this.container.querySelector('.timeline__year--end');
     
     if (currentPeriod && startYearEl && endYearEl) {
-      // Анимация изменения годов
       gsap.to([startYearEl, endYearEl], {
         opacity: 0,
         duration: 0.2,
@@ -308,6 +312,27 @@ export default class Timeline {
     });
   }
 
+  private updateCategoryLabel(): void {
+    const currentPeriod = this.config.periods?.[this.currentPeriodIndex];
+    const labelEl = this.container.querySelector('.timeline__category-text');
+    
+    if (currentPeriod && labelEl) {
+      gsap.to(labelEl, {
+        opacity: 0,
+        y: -10,
+        duration: 0.2,
+        onComplete: () => {
+          labelEl.textContent = currentPeriod.title;
+          gsap.to(labelEl, { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.3 
+          });
+        }
+      });
+    }
+  }
+
   private showEventsForPeriod(periodIndex: number): void {
     const currentPeriod = this.config.periods?.[periodIndex];
     const allSlides = this.container.querySelectorAll('.timeline__event');
@@ -329,10 +354,15 @@ export default class Timeline {
     const circle = this.container.querySelector('.timeline__circle');
     if (!circle) return;
 
+    this.currentRotation = targetAngle;
+
     gsap.to(circle, {
       rotation: targetAngle,
       duration: this.config.animationDuration || 0.8,
-      ease: 'power2.out'
+      ease: 'power2.out',
+      onUpdate: () => {
+        this.updateCirclePointsPositions();
+      }
     });
   }
 
@@ -346,25 +376,23 @@ export default class Timeline {
     const oldIndex = this.currentPeriodIndex;
     this.currentPeriodIndex = index;
 
-    // Calculate rotation angle to bring selected point to top
+    const targetPosition = 120;
     const anglePerStep = 360 / periodsLength;
-    const currentAngle = index * anglePerStep;
-    // Поворачиваем так, чтобы выбранная точка была наверху (90 градусов)
-    const targetAngle = -currentAngle + 120;
+    const currentPointAngle = index * anglePerStep;
+    
+    const targetAngle = targetPosition - currentPointAngle;
 
-    // Start animations
     this.rotateCircle(targetAngle);
     this.updateYearDisplay();
     this.updateCounter();
     this.updateActivePoint();
+    this.updateCategoryLabel();
     this.showEventsForPeriod(index);
 
-    // Set animation complete after duration
     setTimeout(() => {
       this.isAnimating = false;
     }, (this.config.animationDuration || 0.8) * 1000);
 
-    // Dispatch custom event
     this.container.dispatchEvent(new CustomEvent('timeline:periodchange', {
       detail: {
         oldIndex,
@@ -395,19 +423,16 @@ export default class Timeline {
   }
 
   public destroy(): void {
-    // Remove event listeners
     if (this.config.enableKeyboardNavigation) {
       document.removeEventListener('keydown', this.handleKeydown.bind(this));
     }
     window.removeEventListener('resize', this.handleResize.bind(this));
 
-    // Destroy swiper
     if (this.swiper) {
       this.swiper.destroy();
       this.swiper = null;
     }
 
-    // Clear container
     this.container.innerHTML = '';
   }
 }

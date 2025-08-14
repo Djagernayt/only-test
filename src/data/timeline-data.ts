@@ -77,9 +77,9 @@ export const timelineData: TimelinePeriod[] = [
 ];
 
 export const defaultConfig: Partial<TimelineConfig> = {
-  initialPeriod: 0, // Начинаем с первого периода
-  circleRadius: 150,
-  animationDuration: 0.5,
+  initialPeriod: 0, 
+  circleRadius: 265, 
+  animationDuration: 0.8,
   enableKeyboardNavigation: true,
   swiperConfig: {
     navigation: {
@@ -88,6 +88,16 @@ export const defaultConfig: Partial<TimelineConfig> = {
     },
     spaceBetween: 25,
     slidesPerView: 'auto',
-    freeMode: true,
+    freeMode: {
+      enabled: true,
+      sticky: false,
+    },
+    mousewheel: {
+      forceToAxis: true,
+    },
+    touchRatio: 1,
+    threshold: 10,
+    longSwipesRatio: 0.1,
+    longSwipesMs: 300,
   }
 };
