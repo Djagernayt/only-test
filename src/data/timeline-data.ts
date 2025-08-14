@@ -78,7 +78,7 @@ export const timelineData: TimelinePeriod[] = [
 
 export const defaultConfig: Partial<TimelineConfig> = {
   initialPeriod: 0, 
-  circleRadius: 265, 
+  circleRadius: 265,
   animationDuration: 0.8,
   enableKeyboardNavigation: true,
   swiperConfig: {
@@ -99,5 +99,6 @@ export const defaultConfig: Partial<TimelineConfig> = {
     threshold: 10,
     longSwipesRatio: 0.1,
     longSwipesMs: 300,
+    resistanceRatio: 0.85,
   }
 };

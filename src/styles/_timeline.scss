@@ -75,7 +75,7 @@
 
   &__category-label {
     position: absolute;
-    top: -80px; 
+    top: -80px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -108,7 +108,7 @@
     transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
-    gap: clamp(3rem, 8vw, 6rem); 
+    gap: clamp(3rem, 8vw, 6rem);
     z-index: 10;
 
     @media (max-width: 1200px) {
@@ -125,7 +125,7 @@
   }
 
   &__year {
-    font-size: clamp(4rem, 12vw, 12.5rem); 
+    font-size: clamp(4rem, 12vw, 12.5rem);
     font-weight: $font-weight-bold;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -177,7 +177,7 @@
     }
 
     @media (max-width: 768px) {
-      display: none; 
+      display: none !important; 
     }
   }
 
@@ -341,30 +341,99 @@
 
   @media (max-width: 768px) {
     padding: 1rem;
-    min-height: auto;
+    min-height: 100vh;
+    justify-content: flex-start;
 
     &__container {
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto;
+      grid-template-rows: auto 1fr auto;
       gap: 2rem;
-      min-height: auto;
+      min-height: 100vh;
     }
 
     &__header {
       grid-column: 1;
       grid-row: 1;
-      margin-bottom: 2rem;
+      margin-bottom: 0;
+      padding-top: 2rem;
+    }
+
+    &__title {
+      font-size: 1.25rem;
+      margin-bottom: 0;
     }
 
     &__main-content {
       grid-column: 1;
       grid-row: 2;
+      margin-bottom: 0;
+      justify-content: center;
+      position: relative;
+    }
+
+    &__circle-wrapper {
+      display: none !important;
+    }
+
+    &__category-label {
+      position: static;
+      transform: none;
       margin-bottom: 2rem;
+      order: -1;
+    }
+
+    &__years {
+      position: static;
+      transform: none;
+      flex-direction: row;
+      gap: 2rem;
+      text-align: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    &__year {
+      font-size: 3.5rem;
     }
 
     &__bottom {
       grid-column: 1;
       grid-row: 3;
+      margin-top: auto;
+    }
+
+    &__navigation-section {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    &__navigation {
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+      order: 1;
+    }
+
+    &__nav-buttons {
+      gap: 0.75rem;
+      order: 2;
+    }
+
+    &__nav-button {
+      width: 40px;
+      height: 40px;
+
+      svg {
+        width: 8px;
+        height: 12px;
+      }
+    }
+
+    &__events-section {
+      order: 3;
     }
   }
 }

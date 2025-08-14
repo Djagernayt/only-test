@@ -29,6 +29,11 @@ body {
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 0;
+    align-items: stretch;
+  }
 }
 
 button {
@@ -43,6 +48,22 @@ button {
   }
 }
 
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -53,3 +74,77 @@ button {
     scroll-behavior: auto !important;
   }
 }
+
+// @media (max-width: 768px) {
+//   /* Принудительно показываем годы */
+//   .timeline__years {
+//     display: flex !important;
+//     position: static !important;
+//     transform: none !important;
+//     flex-direction: row !important;
+//     gap: 2rem !important;
+//     text-align: center !important;
+//     justify-content: center !important;
+//     margin-bottom: 2rem !important;
+//     background: rgba(255, 0, 0, 0.1); /* Для отладки */
+//     padding: 1rem;
+//     width: 100%;
+//   }
+  
+//   .timeline__year {
+//     font-size: 3.5rem !important;
+//     display: block !important;
+//     opacity: 1 !important;
+//     visibility: visible !important;
+//     background: rgba(0, 255, 0, 0.1); /* Для отладки */
+//     padding: 0.5rem;
+//   }
+  
+//   /* Принудительно настраиваем Swiper */
+//   .timeline-swiper {
+//     width: 100% !important;
+//     overflow: hidden !important;
+//     background: rgba(0, 0, 255, 0.1); /* Для отладки */
+//   }
+  
+//   .timeline-swiper .swiper-wrapper {
+//     display: flex !important;
+//   }
+  
+//   .timeline-swiper .swiper-slide {
+//     width: calc(100vw - 4rem) !important;
+//     flex-shrink: 0 !important;
+//     background: rgba(255, 255, 0, 0.1); /* Для отладки */
+//   }
+  
+//   .timeline__event {
+//     width: 100% !important;
+//     min-width: auto !important;
+//     max-width: none !important;
+//     margin-right: 0 !important;
+//     padding: 1rem !important;
+//     background: rgba(255, 0, 255, 0.1); /* Для отладки */
+//   }
+  
+//   .timeline__event--visible {
+//     display: block !important;
+//   }
+  
+//   /* Скрываем круг полностью */
+//   .timeline__circle-wrapper,
+//   .timeline__circle {
+//     display: none !important;
+//   }
+  
+//   /* Показываем навигацию */
+//   .timeline__navigation {
+//     display: flex !important;
+//   }
+  
+//   .timeline__dots {
+//     display: flex !important;
+//     justify-content: center !important;
+//     gap: 0.5rem !important;
+//     margin: 1rem 0 !important;
+//   }
+// }

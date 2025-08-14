@@ -10,7 +10,7 @@ export default class Timeline {
   private circlePoints: CirclePoint[] = [];
   private swiper: Swiper | null = null;
   private isAnimating: boolean = false;
-  private currentRotation: number = 0;
+  private currentRotation: number = 0; 
 
   constructor(container: HTMLElement, config: Partial<TimelineConfig>) {
     this.container = container;
@@ -97,6 +97,8 @@ export default class Timeline {
               </div>
             </div>
             
+            ${this.createDotsHTML()}
+            
             <div class="timeline__events-section">
               <div class="timeline__events">
                 <div class="timeline__events-wrapper">
@@ -142,6 +144,16 @@ export default class Timeline {
     `).join('');
   }
 
+  private createDotsHTML(): string {
+    return `
+      <div class="timeline__dots">
+        ${this.config.periods.map((_, index) => `
+          <div class="timeline__dot" data-period="${index}"></div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   private createEventsHTML(): string {
     return this.config.periods.map(period => 
       period.events.map(event => `
@@ -181,20 +193,52 @@ export default class Timeline {
     const swiperElement = this.container.querySelector('.timeline-swiper');
     if (!swiperElement) return;
 
-    this.swiper = new Swiper(swiperElement as HTMLElement, {
-      modules: [Navigation, Pagination, FreeMode],
-      navigation: {
-        nextEl: '.timeline-swiper-button-next',
-        prevEl: '.timeline-swiper-button-prev',
-      },
-      spaceBetween: 25,
-      slidesPerView: 'auto',
-      freeMode: true,
-      mousewheel: {
-        forceToAxis: true,
-      },
-      ...this.config.swiperConfig
-    });
+    const isMobile = window.innerWidth <= 768;
+    
+    let swiperConfig;
+    
+    if (isMobile) {
+      swiperConfig = {
+        modules: [Navigation, Pagination, FreeMode],
+        navigation: {
+          nextEl: '.timeline-swiper-button-next',
+          prevEl: '.timeline-swiper-button-prev',
+        },
+        spaceBetween: 16,
+        slidesPerView: 1,
+        centeredSlides: false,
+        freeMode: false,
+        resistance: true,
+        resistanceRatio: 0.85,
+        speed: 300,
+        touchRatio: 1,
+        threshold: 10,
+        touchStartPreventDefault: false,
+        allowTouchMove: true,
+        simulateTouch: true,
+        touchEventsTarget: 'container',
+        passiveListeners: false,
+      };
+    } else {
+      swiperConfig = {
+        modules: [Navigation, Pagination, FreeMode],
+        navigation: {
+          nextEl: '.timeline-swiper-button-next',
+          prevEl: '.timeline-swiper-button-prev',
+        },
+        spaceBetween: 25,
+        slidesPerView: 'auto',
+        freeMode: true,
+        mousewheel: {
+          forceToAxis: true,
+        },
+        ...this.config.swiperConfig
+      };
+    }
+
+    this.swiper = new Swiper(swiperElement as HTMLElement, swiperConfig);
+    
+    console.log('Swiper initialized:', { isMobile, config: swiperConfig });
   }
 
   private setupEventListeners(): void {
@@ -207,6 +251,11 @@ export default class Timeline {
     const points = this.container.querySelectorAll('.timeline__point');
     points.forEach((point, index) => {
       point.addEventListener('click', () => this.goToPeriod(index));
+    });
+
+    const dots = this.container.querySelectorAll('.timeline__dot');
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => this.goToPeriod(index));
     });
 
     if (this.config.enableKeyboardNavigation) {
@@ -234,10 +283,18 @@ export default class Timeline {
   private handleResize(): void {
     setTimeout(() => {
       this.updateCirclePointsPositions();
+      
+      if (this.swiper) {
+        this.swiper.destroy();
+        this.initializeSwiper();
+        this.showEventsForPeriod(this.currentPeriodIndex);
+      }
     }, 100);
   }
 
   private setInitialState(): void {
+    console.log('Setting initial state...');
+    
     setTimeout(() => {
       this.updateCirclePointsPositions();
     }, 100);
@@ -247,6 +304,20 @@ export default class Timeline {
     this.updateActivePoint();
     this.updateCategoryLabel();
     this.showEventsForPeriod(this.currentPeriodIndex);
+    
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        const visibleEvents = this.container.querySelectorAll('.timeline__event--visible');
+        console.log('Visible events on mobile:', visibleEvents.length);
+        
+        const years = this.container.querySelector('.timeline__years');
+        console.log('Years element visibility:', years ? 'visible' : 'hidden');
+        
+        if (this.swiper) {
+          console.log('Swiper slides count:', this.swiper.slides.length);
+        }
+      }, 200);
+    }
   }
 
   private updateCirclePointsPositions(): void {
@@ -310,6 +381,11 @@ export default class Timeline {
     points.forEach((point, index) => {
       point.classList.toggle('timeline__point--active', index === this.currentPeriodIndex);
     });
+
+    const dots = this.container.querySelectorAll('.timeline__dot');
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('timeline__dot--active', index === this.currentPeriodIndex);
+    });
   }
 
   private updateCategoryLabel(): void {
@@ -337,15 +413,28 @@ export default class Timeline {
     const currentPeriod = this.config.periods?.[periodIndex];
     const allSlides = this.container.querySelectorAll('.timeline__event');
     
+    console.log('showEventsForPeriod called:', { periodIndex, currentPeriod, totalSlides: allSlides.length });
+    
     if (currentPeriod) {
       allSlides.forEach(slide => {
         const slidePeriodId = parseInt(slide.getAttribute('data-period') || '0');
-        slide.classList.toggle('timeline__event--visible', slidePeriodId === currentPeriod.id);
+        const shouldShow = slidePeriodId === currentPeriod.id;
+        slide.classList.toggle('timeline__event--visible', shouldShow);
+        
+        console.log('Slide visibility:', { 
+          slidePeriodId, 
+          currentPeriodId: currentPeriod.id, 
+          shouldShow,
+          slideText: slide.querySelector('.timeline__event-title')?.textContent?.slice(0, 30)
+        });
       });
 
       if (this.swiper) {
-        this.swiper.update();
-        this.swiper.slideTo(0, 0);
+        setTimeout(() => {
+          this.swiper?.update();
+          this.swiper?.slideTo(0, 0);
+          console.log('Swiper updated and moved to slide 0');
+        }, 50);
       }
     }
   }

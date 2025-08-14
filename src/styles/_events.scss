@@ -13,12 +13,27 @@
   .swiper-wrapper {
     align-items: stretch;
   }
+  
+  @media (max-width: 768px) {
+    overflow: hidden;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    
+    .swiper-wrapper {
+      align-items: stretch;
+    }
+    
+    .swiper-slide {
+      width: calc(100vw - 4rem) !important;
+      flex-shrink: 0;
+    }
+  }
 }
 
 .timeline__event {
   width: auto;
   min-width: clamp(280px, 25vw, 320px); 
-  max-width: clamp(320px, 30vw, 400px); 
+  max-width: clamp(320px, 30vw, 400px);
   margin-right: 1.25rem;
   display: none;
   
@@ -69,8 +84,11 @@
   }
 
   @media (max-width: 768px) {
-    min-width: 280px;
-    max-width: 320px;
+    min-width: calc(100vw - 4rem) !important;
+    max-width: calc(100vw - 4rem) !important;
+    margin-right: 1rem !important;
+    padding: 0 1rem;
+    flex-shrink: 0;
 
     &-year {
       font-size: 1.25rem;
@@ -83,6 +101,31 @@
     &-description {
       font-size: 0.9rem;
     }
+  }
+}
+
+.timeline__dots {
+  display: none;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0 1rem;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+}
+
+.timeline__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C7CDD9;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &--active {
+    background: #42567A;
+    transform: scale(1.5);
   }
 }
 
@@ -134,6 +177,10 @@
 
   .timeline-swiper-button-next svg {
     margin-left: 1px;
+  }
+
+  @media (max-width: 768px) {
+    display: none; 
   }
 }
 
